@@ -2,17 +2,20 @@ name: JFrog CLI Core Tests
 on:
   push:
     branches:
-      - '**'
+      - "**"
     tags-ignore:
-      - '**'
+      - "**"
   pull_request:
+permissions:
+  contents: read
+  id-token: write
 jobs:
   test:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu, windows, macos ]
+        os: [ubuntu, windows, macos]
     env:
       GOPROXY: direct
       GRADLE_OPTS: -Dorg.gradle.daemon=false
@@ -24,7 +27,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-        
+
       - name: Install pipenv & poetry
         run: python -m pip install pipenv poetry
 
@@ -36,7 +39,7 @@ jobs:
       - name: Install dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.x'
+          dotnet-version: "6.x"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -53,9 +56,14 @@ jobs:
           echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
           sudo apt-get update
           sudo apt-get install -y mono-complete
-          
+
       - name: Setup Go with cache
         uses: jfrog/.github/actions/install-go-with-cache@main
+
+      - name: Setup JFrog Fly
+        uses: jfrog/fly-action@v1
+        with:
+          url: https://omerdev.jfrog.io
 
       - name: Tests
         run: go test -v github.com/jfrog/jfrog-cli-core/v2/tests -timeout 0 -race

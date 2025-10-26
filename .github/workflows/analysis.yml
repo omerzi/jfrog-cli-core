@@ -2,10 +2,13 @@ name: "Static Analysis"
 on:
   push:
     branches:
-      - '**'
+      - "**"
     tags-ignore:
-      - '**'
+      - "**"
   pull_request:
+permissions:
+  contents: read
+  id-token: write
 jobs:
   Static-Check:
     runs-on: ubuntu-latest
@@ -15,6 +18,11 @@ jobs:
 
       - name: Setup Go with cache
         uses: jfrog/.github/actions/install-go-with-cache@main
+
+      - name: Setup JFrog Fly
+        uses: jfrog/fly-action@v1
+        with:
+          url: https://omerdev.jfrog.io
 
       - name: Run golangci linter
         uses: jfrog/.github/actions/golangci-lint@main
@@ -27,6 +35,11 @@ jobs:
 
       - name: Setup Go with cache
         uses: jfrog/.github/actions/install-go-with-cache@main
+
+      - name: Setup JFrog Fly
+        uses: jfrog/fly-action@v1
+        with:
+          url: https://omerdev.jfrog.io
 
       - name: Run Go-Sec scanner
         uses: jfrog/.github/actions/gosec-scanner@main
